@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/jaswdr/faker"
+	"time"
 )
 
 func main() {
@@ -24,7 +25,7 @@ func main() {
 	// Assuming 'client' is already authenticated
 	comments, _, err := client.User.Comments(context.Background(), &reddit.ListUserOverviewOptions{
 		ListOptions: reddit.ListOptions{
-			Limit: 1,
+			Limit: 2,
 		},
 	})
 	if err != nil {
@@ -37,10 +38,12 @@ func main() {
 		fmt.Println(comment.Body)
 		thingID := "t1_" + comment.ID
 		_, _, err := client.Comment.Edit(context.Background(), thingID, randomParagraph)
-		
+
 		if err != nil {
 			log.Fatalf("failed to edit comment: %v", err)
 		}
+
+		time.Sleep(10 * time.Second)
 	}
 
 	
