@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/jaswdr/faker"
-	// "time"
+	"time"
 	"encoding/json"
 	"os"
 )
@@ -34,7 +34,7 @@ func main() {
 		log.Fatalf("Error decoding config file: %v", err)
 	}
 
-	fmt.Println(secrets)
+	// fmt.Println(secrets)
 
 	credentials := reddit.Credentials{
 		ID:       secrets.ID,
@@ -51,28 +51,40 @@ func main() {
 	// Assuming 'client' is already authenticated
 	comments, _, err := client.User.Comments(context.Background(), &reddit.ListUserOverviewOptions{
 		ListOptions: reddit.ListOptions{
-			Limit: 2,
+			Limit: 1,
 		},
 	})
 	if err != nil {
 		log.Fatalf("failed to fetch comments: %v", err)
 	}
 	fmt.Println(comments)
-	// randomParagraph := fmt.Sprintf(generateRandomParagraph())
+	randomParagraph := fmt.Sprintf(generateRandomParagraph())
 
 	for _, comment := range comments {
 		fmt.Println(comment.Body)
-	// 	thingID := "t1_" + comment.ID
-	// 	_, _, err := client.Comment.Edit(context.Background(), thingID, randomParagraph)
+		thingID := "t1_" + comment.ID
+		_, _, err := client.Comment.Edit(context.Background(), thingID, randomParagraph)
 
-	// 	if err != nil {
-	// 		log.Fatalf("failed to edit comment: %v", err)
-	// 	}
+		if err != nil {
+			log.Fatalf("failed to edit comment: %v", err)
+		} else {
+			fmt.Println("edit successful")
+		}
 
-	// 	time.Sleep(10 * time.Second)
+		time.Sleep(10 * time.Second)
+
+		_, err = client.Comment.Delete(context.Background(), thingID)
+		
+		if err != nil{
+			log.Fatalf("failed to delete comment: %v", err)
+		} else {
+			fmt.Println("delete successful")
+		}
+
+		time.Sleep(10 * time.Second)
+
 	}
 
-	
 }
 
 func generateRandomParagraph() string {
