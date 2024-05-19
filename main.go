@@ -6,15 +6,41 @@ import (
 	"context"
 	"fmt"
 	"github.com/jaswdr/faker"
-	"time"
+	// "time"
+	"encoding/json"
+	"os"
 )
 
+type Secret struct {
+	ID       string `json:"ID"`
+	Secret   string `json:"Secret"`
+	Username string `json:"Username"`
+	Password string `json:"Password"`
+}
+
 func main() {
+	file, err := os.Open("secret.json")
+	if err != nil{
+      log.Fatalf("fail to open file: %v", err)
+	}
+
+	defer file.Close()
+    
+	decoder := json.NewDecoder(file)
+	secrets := Secret{}
+    err = decoder.Decode(&secrets)
+
+	if err != nil {
+		log.Fatalf("Error decoding config file: %v", err)
+	}
+
+	fmt.Println(secrets)
+
 	credentials := reddit.Credentials{
-		ID:       "",
-		Secret:   "",
-		Username: "",
-		Password: "",
+		ID:       secrets.ID,
+		Secret:   secrets.Secret,
+		Username: secrets.Username,
+		Password: secrets.Password,
 	}
 
     client, err := reddit.NewClient(credentials)
@@ -31,19 +57,19 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to fetch comments: %v", err)
 	}
-
-	randomParagraph := fmt.Sprintf(generateRandomParagraph())
+	fmt.Println(comments)
+	// randomParagraph := fmt.Sprintf(generateRandomParagraph())
 
 	for _, comment := range comments {
 		fmt.Println(comment.Body)
-		thingID := "t1_" + comment.ID
-		_, _, err := client.Comment.Edit(context.Background(), thingID, randomParagraph)
+	// 	thingID := "t1_" + comment.ID
+	// 	_, _, err := client.Comment.Edit(context.Background(), thingID, randomParagraph)
 
-		if err != nil {
-			log.Fatalf("failed to edit comment: %v", err)
-		}
+	// 	if err != nil {
+	// 		log.Fatalf("failed to edit comment: %v", err)
+	// 	}
 
-		time.Sleep(10 * time.Second)
+	// 	time.Sleep(10 * time.Second)
 	}
 
 	
