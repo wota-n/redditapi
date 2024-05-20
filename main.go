@@ -19,6 +19,11 @@ type Secret struct {
 }
 
 func main() {
+	var numberofComments int
+
+    fmt.Println("Enter number of comments to delete: ")
+    _, err := fmt.Scanf("%d", &numberofComments )
+	
 	file, err := os.Open("secret.json")
 	if err != nil{
       log.Fatalf("fail to open file: %v", err)
@@ -51,7 +56,7 @@ func main() {
 	// Assuming 'client' is already authenticated
 	comments, _, err := client.User.Comments(context.Background(), &reddit.ListUserOverviewOptions{
 		ListOptions: reddit.ListOptions{
-			Limit: 1,
+			Limit: numberofComments,
 		},
 	})
 	if err != nil {
@@ -74,7 +79,7 @@ func main() {
 		time.Sleep(10 * time.Second)
 
 		_, err = client.Comment.Delete(context.Background(), thingID)
-		
+
 		if err != nil{
 			log.Fatalf("failed to delete comment: %v", err)
 		} else {
